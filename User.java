@@ -1,17 +1,17 @@
 public abstract class User {
-    protected string username;
-    protected string password;
+    protected String username;
+    protected String password;
 
-    public User(string username, string password) {
+    public User(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
-    public void() {
-        System.out.println(username + "Login berhasil");
+    public void login() {
+        System.out.println(username + " login berhasil");
     }
 
-    public void() {
-        System.out.println(username + "Log out berhasil");
+    public void logout() {
+        System.out.println(username + " logout berhasil");
     }
 }
