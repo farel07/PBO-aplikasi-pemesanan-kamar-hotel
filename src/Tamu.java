@@ -103,6 +103,7 @@ public class Tamu extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         side_datakamar1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -179,6 +180,13 @@ public class Tamu extends javax.swing.JFrame {
             }
         });
 
+        jButton1.setText("Reservasi");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -186,6 +194,7 @@ public class Tamu extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(27, 27, 27)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton2)
                     .addComponent(side_datakamar1))
                 .addContainerGap(28, Short.MAX_VALUE))
@@ -197,7 +206,9 @@ public class Tamu extends javax.swing.JFrame {
                 .addComponent(side_datakamar1)
                 .addGap(18, 18, 18)
                 .addComponent(jButton2)
-                .addContainerGap(322, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jButton1)
+                .addContainerGap(281, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -217,7 +228,7 @@ public class Tamu extends javax.swing.JFrame {
                         .addComponent(input_tamu, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(submit_tamu)))
-                .addContainerGap(106, Short.MAX_VALUE))
+                .addContainerGap(108, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -253,6 +264,32 @@ public class Tamu extends javax.swing.JFrame {
 
     private void hapus_kamar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hapus_kamar1ActionPerformed
         // TODO add your handling code here:
+         // TODO add your handling code here:
+           int selectedRow = tabel_tamu.getSelectedRow();
+
+if (selectedRow == -1) {
+    JOptionPane.showMessageDialog(this, "Pilih baris yang ingin dihapus terlebih dahulu.");
+    return;
+}
+
+int confirm = JOptionPane.showConfirmDialog(this, "Yakin ingin menghapus data ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+if (confirm == JOptionPane.YES_OPTION) {
+    int id = (int) tabel_tamu.getValueAt(selectedRow, 0);
+
+    try {
+        String sql = "DELETE FROM tamu WHERE idTamu = " + id;
+        int result = stmt.executeUpdate(sql);
+        if (result > 0) {
+            ((DefaultTableModel) tabel_tamu.getModel()).removeRow(selectedRow);
+            JOptionPane.showMessageDialog(this, "Data berhasil dihapus.");
+        } else {
+            JOptionPane.showMessageDialog(this, "Data gagal dihapus.");
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error saat menghapus data: " + e.getMessage());
+    }
+}
+
     }//GEN-LAST:event_hapus_kamar1ActionPerformed
 
     private void submit_tamuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submit_tamuActionPerformed
@@ -305,6 +342,15 @@ public class Tamu extends javax.swing.JFrame {
     this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        Reservasi reservasiFrame = new Reservasi();
+        reservasiFrame.setVisible(true);
+
+    // Tutup form saat ini (opsional)
+        this.dispose();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -343,6 +389,7 @@ public class Tamu extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton hapus_kamar1;
     private javax.swing.JTextField input_tamu;
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

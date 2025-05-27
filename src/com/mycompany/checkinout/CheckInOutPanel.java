@@ -4,7 +4,7 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 
-public class CheckInOutPanel extends JPanel {
+public class CheckInOutPanel extends JFrame {
     private JTextField txtIdReservasi;
     private JTextField txtNamaTamu;
     private JTextField txtNomorKamar;
@@ -14,12 +14,18 @@ public class CheckInOutPanel extends JPanel {
     private JButton btnCheckOut;
 
     public CheckInOutPanel() {
+        setTitle("Form Check-In / Check-Out");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(500, 450);
+        setLocationRelativeTo(null); // Center window
+
         initComponents();
     }
 
     private void initComponents() {
-        setLayout(new BorderLayout(10, 10));
-        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
+        contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        setContentPane(contentPanel);
 
         // Panel Input
         JPanel panelInput = new JPanel(new GridBagLayout());
@@ -41,7 +47,7 @@ public class CheckInOutPanel extends JPanel {
         txtNamaTamu = new JTextField(15);
         gbc.gridx = 1; gbc.gridy = 1;
         panelInput.add(txtNamaTamu, gbc);
-        
+
         // Nomor Kamar
         gbc.gridx = 0; gbc.gridy = 2;
         panelInput.add(new JLabel("Nomor Kamar:"), gbc);
@@ -49,6 +55,7 @@ public class CheckInOutPanel extends JPanel {
         gbc.gridx = 1; gbc.gridy = 2;
         panelInput.add(txtNomorKamar, gbc);
 
+        // Tombol Cari
         btnCariReservasi = new JButton("Cari Reservasi");
         gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2; gbc.fill = GridBagConstraints.NONE;
         panelInput.add(btnCariReservasi, gbc);
@@ -68,12 +75,12 @@ public class CheckInOutPanel extends JPanel {
         panelAksi.add(btnCheckIn);
         panelAksi.add(btnCheckOut);
 
-        // Menambahkan panel-panel ke panel utama
-        add(panelInput, BorderLayout.NORTH);
-        add(panelDetail, BorderLayout.CENTER);
-        add(panelAksi, BorderLayout.SOUTH);
+        // Tambahkan ke content panel
+        contentPanel.add(panelInput, BorderLayout.NORTH);
+        contentPanel.add(panelDetail, BorderLayout.CENTER);
+        contentPanel.add(panelAksi, BorderLayout.SOUTH);
 
-        // Action Listeners (Placeholder)
+        // Action Listeners
         btnCariReservasi.addActionListener(e -> cariReservasi());
         btnCheckIn.addActionListener(e -> prosesCheckIn());
         btnCheckOut.addActionListener(e -> prosesCheckOut());
@@ -82,17 +89,15 @@ public class CheckInOutPanel extends JPanel {
     private void cariReservasi() {
         String idReservasi = txtIdReservasi.getText();
         String namaTamu = txtNamaTamu.getText();
-        // TODO: Hubungkan dengan logika backend untuk mencari reservasi
-        // Contoh: Reservation reservation = reservationService.findReservation(idReservasi, namaTamu);
+
         if (!idReservasi.isEmpty() || !namaTamu.isEmpty()) {
             areaDetailReservasi.setText("Mencari reservasi untuk ID: " + idReservasi + ", Nama: " + namaTamu + "...\n");
-            // Contoh data dummy
             areaDetailReservasi.append("Reservasi Ditemukan:\n");
             areaDetailReservasi.append("Nama Tamu: John Doe\n");
             areaDetailReservasi.append("Nomor Kamar: 101\n");
             areaDetailReservasi.append("Tipe Kamar: Deluxe\n");
             areaDetailReservasi.append("Status: Belum Check-in\n");
-            txtNomorKamar.setText("101"); // Isi nomor kamar jika ditemukan
+            txtNomorKamar.setText("101");
         } else {
             JOptionPane.showMessageDialog(this, "Masukkan ID Reservasi atau Nama Tamu.", "Input Kosong", JOptionPane.WARNING_MESSAGE);
             areaDetailReservasi.setText("");
@@ -101,42 +106,31 @@ public class CheckInOutPanel extends JPanel {
 
     private void prosesCheckIn() {
         String nomorKamar = txtNomorKamar.getText();
-        if (nomorKamar.isEmpty() || areaDetailReservasi.getText().contains("Belum Check-in") == false) {
-             JOptionPane.showMessageDialog(this, "Silakan cari reservasi yang valid terlebih dahulu atau pastikan tamu belum check-in.", "Info", JOptionPane.INFORMATION_MESSAGE);
-             return;
+        if (nomorKamar.isEmpty() || !areaDetailReservasi.getText().contains("Belum Check-in")) {
+            JOptionPane.showMessageDialog(this, "Silakan cari reservasi yang valid terlebih dahulu atau pastikan tamu belum check-in.", "Info", JOptionPane.INFORMATION_MESSAGE);
+            return;
         }
-        // TODO: Hubungkan dengan logika backend untuk proses check-in
-        // Contoh: boolean success = checkInService.performCheckIn(selectedReservation);
         JOptionPane.showMessageDialog(this, "Proses Check-in untuk kamar " + nomorKamar + " berhasil.", "Check-in Sukses", JOptionPane.INFORMATION_MESSAGE);
         areaDetailReservasi.append("\nSTATUS: CHECKED-IN");
-        // TODO: Update status kamar dan reservasi di backend dan UI
     }
 
     private void prosesCheckOut() {
         String nomorKamar = txtNomorKamar.getText();
-         if (nomorKamar.isEmpty() || areaDetailReservasi.getText().contains("CHECKED-IN") == false) {
-             JOptionPane.showMessageDialog(this, "Silakan cari reservasi yang sudah check-in untuk proses check-out.", "Info", JOptionPane.INFORMATION_MESSAGE);
-             return;
+        if (nomorKamar.isEmpty() || !areaDetailReservasi.getText().contains("CHECKED-IN")) {
+            JOptionPane.showMessageDialog(this, "Silakan cari reservasi yang sudah check-in untuk proses check-out.", "Info", JOptionPane.INFORMATION_MESSAGE);
+            return;
         }
-        // TODO: Hubungkan dengan logika backend untuk proses check-out
-        // Contoh: boolean success = checkOutService.performCheckOut(nomorKamar);
         JOptionPane.showMessageDialog(this, "Proses Check-out untuk kamar " + nomorKamar + " berhasil.", "Check-out Sukses", JOptionPane.INFORMATION_MESSAGE);
         areaDetailReservasi.setText("Kamar " + nomorKamar + " telah check-out.");
         txtIdReservasi.setText("");
         txtNamaTamu.setText("");
         txtNomorKamar.setText("");
-        // TODO: Update status kamar di backend dan UI
     }
 
-    // Main method untuk testing panel ini secara terpisah
+    // Jalankan sebagai aplikasi
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Panel Check-in/Check-out");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.getContentPane().add(new CheckInOutPanel());
-            frame.pack();
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
+            new CheckInOutPanel().setVisible(true);
         });
     }
 }
