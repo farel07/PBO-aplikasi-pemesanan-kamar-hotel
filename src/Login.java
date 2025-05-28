@@ -11,7 +11,7 @@ public class Login extends javax.swing.JFrame {
 
  
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
@@ -46,7 +46,7 @@ public class Login extends javax.swing.JFrame {
 
         jLabel7.setFont(new java.awt.Font("Segoe UI Light", 0, 14)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(204, 204, 204));
-        jLabel7.setText("copyright © Leedon Hotel All rights reserved");
+        jLabel7.setText("copyright © IT Leedon Hotel All rights reserved");
 
         jLabel9.setIcon(new javax.swing.ImageIcon("/Users/ditofatahillah/Documents/PBO/PBO-aplikasi-pemesanan-kamar-hotel/src/com/mycompany/image/logo-2.png")); // NOI18N
 
@@ -55,7 +55,7 @@ public class Login extends javax.swing.JFrame {
         RightLayout.setHorizontalGroup(
             RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, RightLayout.createSequentialGroup()
-                .addGap(0, 56, Short.MAX_VALUE)
+                .addGap(0, 39, Short.MAX_VALUE)
                 .addComponent(jLabel7)
                 .addGap(40, 40, 40))
             .addGroup(RightLayout.createSequentialGroup()
@@ -78,7 +78,7 @@ public class Login extends javax.swing.JFrame {
                 .addComponent(jLabel5)
                 .addGap(28, 28, 28)
                 .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 87, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 86, Short.MAX_VALUE)
                 .addComponent(jLabel7)
                 .addGap(78, 78, 78))
         );
@@ -112,6 +112,8 @@ public class Login extends javax.swing.JFrame {
         jButton2.setBackground(new java.awt.Color(0, 102, 102));
         jButton2.setForeground(new java.awt.Color(255, 255, 255));
         jButton2.setText("Login");
+        jButton2.setBorderPainted(false);
+        jButton2.setOpaque(true);
 
         javax.swing.GroupLayout LeftLayout = new javax.swing.GroupLayout(Left);
         Left.setLayout(LeftLayout);
@@ -178,14 +180,14 @@ public class Login extends javax.swing.JFrame {
         );
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    }// </editor-fold>                        
 
     /**
      * @param args the command line arguments
      */
     
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // Variables declaration - do not modify                     
     private javax.swing.JPanel Left;
     private javax.swing.JPanel Right;
     private javax.swing.JButton jButton2;
@@ -201,5 +203,5 @@ public class Login extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPasswordField jPasswordField1;
     private javax.swing.JTextField jTextField1;
-    // End of variables declaration//GEN-END:variables
+    // End of variables declaration                   
 }
