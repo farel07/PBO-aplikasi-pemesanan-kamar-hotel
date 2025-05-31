@@ -101,7 +101,6 @@ public class Tamu extends javax.swing.JFrame {
         hapus_kamar1 = new javax.swing.JButton();
         submit_tamu = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
-        side_datakamar1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
 
@@ -166,13 +165,6 @@ public class Tamu extends javax.swing.JFrame {
 
         jPanel4.setBackground(new java.awt.Color(204, 255, 255));
 
-        side_datakamar1.setText("Data Kamar");
-        side_datakamar1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                side_datakamar1ActionPerformed(evt);
-            }
-        });
-
         jButton2.setText("Data Tamu");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -195,20 +187,17 @@ public class Tamu extends javax.swing.JFrame {
                 .addGap(27, 27, 27)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2)
-                    .addComponent(side_datakamar1))
-                .addContainerGap(28, Short.MAX_VALUE))
+                    .addComponent(jButton2))
+                .addContainerGap(33, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(17, 17, 17)
-                .addComponent(side_datakamar1)
-                .addGap(18, 18, 18)
+                .addContainerGap()
                 .addComponent(jButton2)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton1)
-                .addContainerGap(281, Short.MAX_VALUE))
+                .addContainerGap(339, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -321,16 +310,6 @@ if (confirm == JOptionPane.YES_OPTION) {
     }
     }//GEN-LAST:event_submit_tamuActionPerformed
 
-    private void side_datakamar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_side_datakamar1ActionPerformed
-        // TODO add your handling code here:
-        // Buka form Manager
-    Manager managerFrame = new Manager();
-    managerFrame.setVisible(true);
-
-    // Tutup form saat ini (opsional)
-    this.dispose();
-    }//GEN-LAST:event_side_datakamar1ActionPerformed
-
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
         // TODO add your handling code here:
@@ -396,7 +375,6 @@ if (confirm == JOptionPane.YES_OPTION) {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JButton side_datakamar1;
     private javax.swing.JButton submit_tamu;
     private javax.swing.JTable tabel_tamu;
     // End of variables declaration//GEN-END:variables

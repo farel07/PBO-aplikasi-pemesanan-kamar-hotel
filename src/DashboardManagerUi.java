@@ -2,7 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
+import java.sql.Connection;
+import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JOptionPane;
+import java.sql.PreparedStatement;
 
 /**
  *
@@ -13,9 +19,90 @@ public class DashboardManagerUi extends javax.swing.JFrame {
     /**
      * Creates new form DashboardManagerUi
      */
+    private Connection conn;
+    private Statement stmt;
     public DashboardManagerUi() {
         initComponents();
+        initDatabase();
+        tampilkanDataReservasi();
+        tampilkanJumlahKamarTersedia();
+        tampilkanJumlahPengunjung();
     }
+    
+     private void initDatabase() {
+        try {
+            conn = Database.getConnection();
+            stmt = conn.createStatement();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Gagal koneksi ke database: " + e.getMessage());
+        }
+    }
+    
+    public void tampilkanDataReservasi() {
+    DefaultTableModel model = new DefaultTableModel();
+    model.addColumn("ID Reservasi");
+    model.addColumn("Nama Tamu");
+    model.addColumn("No. Kamar");
+    model.addColumn("Check-In");
+    model.addColumn("Check-Out");
+    model.addColumn("Status");
+
+    try {
+        String sql = "SELECT tr.idReservasi, t.nama AS nama_tamu, k.no_kamar, tr.tgl_checkin, tr.tgl_checkout, tr.status " +
+                     "FROM tamu_reservasi tr " +
+                     "JOIN tamu t ON tr.idTamu = t.idTamu " +
+                     "JOIN kamar k ON tr.idKamar = k.idKamar";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        ResultSet rs = pst.executeQuery();
+
+        while (rs.next()) {
+            String statusStr = rs.getInt("status") == 1 ? "Aktif" : "Selesai";
+            model.addRow(new Object[]{
+                rs.getInt("idReservasi"),
+                rs.getString("nama_tamu"),
+                rs.getString("no_kamar"),
+                rs.getDate("tgl_checkin"),
+                rs.getDate("tgl_checkout"),
+                statusStr
+            });
+        }
+
+        data_reservasi.setModel(model);
+
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "Gagal memuat data: " + e.getMessage());
+    }
+}
+    
+    public void tampilkanJumlahKamarTersedia() {
+    try {
+        String sql = "SELECT COUNT(*) AS total FROM kamar WHERE status = 'kosong'";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        ResultSet rs = pst.executeQuery();
+        if (rs.next()) {
+            jumlah_kamar_tersedia.setText(rs.getString("total"));
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "Gagal mengambil jumlah kamar: " + e.getMessage());
+    }
+}
+
+    
+    public void tampilkanJumlahPengunjung() {
+    try {
+        String sql = "SELECT COUNT(*) AS total FROM tamu";
+        PreparedStatement pst = conn.prepareStatement(sql);
+        ResultSet rs = pst.executeQuery();
+        if (rs.next()) {
+            jumlah_pengunjung.setText(rs.getString("total"));
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "Gagal mengambil jumlah tamu: " + e.getMessage());
+    }
+}
+
+    
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -29,23 +116,23 @@ public class DashboardManagerUi extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel10 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        btn_kamar = new javax.swing.JButton();
+        btn_restoran = new javax.swing.JButton();
+        btn_logout = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
+        jumlah_pengunjung = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jPanel8 = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
+        jumlah_kamar_tersedia = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        data_reservasi = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -71,29 +158,29 @@ public class DashboardManagerUi extends javax.swing.JFrame {
         jLabel8.setText("Welcome , John Doe");
         jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 210, -1, 30));
 
-        jButton1.setText("Kelola Kamar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btn_kamar.setText("Kelola Kamar");
+        btn_kamar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btn_kamarActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 300, 120, 70));
+        jPanel1.add(btn_kamar, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 300, 120, 70));
 
-        jButton2.setText("Kelola Restoran");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        btn_restoran.setText("Kelola Restoran");
+        btn_restoran.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btn_restoranActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 400, 120, 70));
+        jPanel1.add(btn_restoran, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 400, 120, 70));
 
-        jButton3.setText("Log out");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        btn_logout.setText("Log out");
+        btn_logout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                btn_logoutActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 500, 120, 70));
+        jPanel1.add(btn_logout, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 500, 120, 70));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 230, 800));
 
@@ -127,25 +214,25 @@ public class DashboardManagerUi extends javax.swing.JFrame {
 
         jPanel5.setBorder(javax.swing.BorderFactory.createMatteBorder(15, 0, 0, 0, new java.awt.Color(0, 255, 204)));
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 50)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel2.setText("278");
+        jumlah_pengunjung.setFont(new java.awt.Font("Segoe UI", 1, 50)); // NOI18N
+        jumlah_pengunjung.setForeground(new java.awt.Color(102, 102, 102));
+        jumlah_pengunjung.setText("8");
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(80, 80, 80)
-                .addComponent(jLabel2)
-                .addContainerGap(84, Short.MAX_VALUE))
+                .addGap(102, 102, 102)
+                .addComponent(jumlah_pengunjung)
+                .addContainerGap(119, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(28, 28, 28)
-                .addComponent(jLabel2)
-                .addContainerGap(40, Short.MAX_VALUE))
+                .addGap(24, 24, 24)
+                .addComponent(jumlah_pengunjung)
+                .addContainerGap(44, Short.MAX_VALUE))
         );
 
         jPanel2.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 170, 250, 150));
@@ -184,24 +271,24 @@ public class DashboardManagerUi extends javax.swing.JFrame {
 
         jPanel8.setBorder(javax.swing.BorderFactory.createMatteBorder(15, 0, 0, 0, new java.awt.Color(0, 255, 204)));
 
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 50)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel5.setText("300");
+        jumlah_kamar_tersedia.setFont(new java.awt.Font("Segoe UI", 1, 50)); // NOI18N
+        jumlah_kamar_tersedia.setForeground(new java.awt.Color(102, 102, 102));
+        jumlah_kamar_tersedia.setText("8");
 
         javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
         jPanel8.setLayout(jPanel8Layout);
         jPanel8Layout.setHorizontalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
-                .addContainerGap(86, Short.MAX_VALUE)
-                .addComponent(jLabel5)
-                .addGap(78, 78, 78))
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addGap(110, 110, 110)
+                .addComponent(jumlah_kamar_tersedia)
+                .addContainerGap(111, Short.MAX_VALUE))
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel8Layout.createSequentialGroup()
                 .addGap(27, 27, 27)
-                .addComponent(jLabel5)
+                .addComponent(jumlah_kamar_tersedia)
                 .addContainerGap(41, Short.MAX_VALUE))
         );
 
@@ -213,7 +300,7 @@ public class DashboardManagerUi extends javax.swing.JFrame {
 
         jPanel2.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, -70, 1540, 410));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        data_reservasi.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -224,7 +311,7 @@ public class DashboardManagerUi extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(data_reservasi);
 
         jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 370, 920, 300));
 
@@ -233,17 +320,21 @@ public class DashboardManagerUi extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btn_kamarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_kamarActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+        Manager managerFrame = new Manager();
+        managerFrame.setVisible(true);
+    // Tutup form saat ini (opsional)
+    this.dispose();
+    }//GEN-LAST:event_btn_kamarActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void btn_restoranActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_restoranActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_btn_restoranActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void btn_logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_logoutActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_btn_logoutActionPerformed
 
     /**
      * @param args the command line arguments
@@ -282,14 +373,13 @@ public class DashboardManagerUi extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton btn_kamar;
+    private javax.swing.JButton btn_logout;
+    private javax.swing.JButton btn_restoran;
+    private javax.swing.JTable data_reservasi;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
@@ -301,6 +391,7 @@ public class DashboardManagerUi extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JLabel jumlah_kamar_tersedia;
+    private javax.swing.JLabel jumlah_pengunjung;
     // End of variables declaration//GEN-END:variables
 }

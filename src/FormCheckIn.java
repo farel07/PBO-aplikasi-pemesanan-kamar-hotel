@@ -83,7 +83,6 @@ private void isiComboBoxKamar() {
         jPanel3 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
-        side_datakamar1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         input_kamar = new javax.swing.JComboBox<>();
@@ -123,13 +122,6 @@ private void isiComboBoxKamar() {
 
         jPanel4.setBackground(new java.awt.Color(204, 255, 255));
 
-        side_datakamar1.setText("Data Kamar");
-        side_datakamar1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                side_datakamar1ActionPerformed(evt);
-            }
-        });
-
         jButton2.setText("Data Tamu");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -148,20 +140,17 @@ private void isiComboBoxKamar() {
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(side_datakamar1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE)
-            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE)
             .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(side_datakamar1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(22, 22, 22)
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(279, Short.MAX_VALUE))
+                .addContainerGap(327, Short.MAX_VALUE))
         );
 
         input_kamar.addActionListener(new java.awt.event.ActionListener() {
@@ -245,16 +234,6 @@ private void isiComboBoxKamar() {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void side_datakamar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_side_datakamar1ActionPerformed
-        // TODO add your handling code here:
-        // Buka form Manager
-        Manager managerFrame = new Manager();
-        managerFrame.setVisible(true);
-
-        // Tutup form saat ini (opsional)
-        this.dispose();
-    }//GEN-LAST:event_side_datakamar1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
@@ -373,6 +352,5 @@ private void isiComboBoxKamar() {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JButton side_datakamar1;
     // End of variables declaration//GEN-END:variables
 }
