@@ -108,6 +108,7 @@ public class Manager extends javax.swing.JFrame {
         hapus_kamar = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         side_datakamar = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -180,21 +181,28 @@ public class Manager extends javax.swing.JFrame {
             }
         });
 
+        jButton1.setText("Dashboard");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addComponent(side_datakamar)
-                .addContainerGap(28, Short.MAX_VALUE))
+            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(side_datakamar, javax.swing.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(17, 17, 17)
-                .addComponent(side_datakamar)
-                .addContainerGap(363, Short.MAX_VALUE))
+                .addGap(11, 11, 11)
+                .addComponent(side_datakamar, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(309, Short.MAX_VALUE))
         );
 
         jMenu1.setText("File");
@@ -323,6 +331,15 @@ if (confirm == JOptionPane.YES_OPTION) {
         
     }//GEN-LAST:event_side_datakamarActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        DashboardManagerUi ManagerFrame = new DashboardManagerUi();
+    ManagerFrame.setVisible(true);
+
+    // Tutup form saat ini (opsional)
+    this.dispose();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -361,6 +378,7 @@ if (confirm == JOptionPane.YES_OPTION) {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton hapus_kamar;
     private javax.swing.JTextField input_kamar;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;

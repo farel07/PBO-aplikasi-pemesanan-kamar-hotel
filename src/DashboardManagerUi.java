@@ -56,7 +56,7 @@ public class DashboardManagerUi extends javax.swing.JFrame {
         ResultSet rs = pst.executeQuery();
 
         while (rs.next()) {
-            String statusStr = rs.getInt("status") == 1 ? "Aktif" : "Selesai";
+            String statusStr = rs.getInt("status") == 0 ? "Aktif" : "Selesai";
             model.addRow(new Object[]{
                 rs.getInt("idReservasi"),
                 rs.getString("nama_tamu"),
@@ -322,7 +322,7 @@ public class DashboardManagerUi extends javax.swing.JFrame {
 
     private void btn_kamarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_kamarActionPerformed
         // TODO add your handling code here:
-        Manager managerFrame = new Manager();
+        Managerv2 managerFrame = new Managerv2();
         managerFrame.setVisible(true);
     // Tutup form saat ini (opsional)
     this.dispose();

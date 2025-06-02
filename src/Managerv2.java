@@ -38,33 +38,35 @@ public class Managerv2 extends javax.swing.JFrame {
     }
     
     
-    private void tampilkanDataKamar() {
-    DefaultTableModel model = new DefaultTableModel(new Object[]{"ID", "No Kamar"}, 0) {
+   private void tampilkanDataKamar() {
+    DefaultTableModel model = new DefaultTableModel(new Object[]{"ID", "No Kamar", "Status"}, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
-            // Kolom No Kamar (index 1) saja yang bisa diubah
+            // Hanya kolom No Kamar (index 1) yang bisa diubah
             return column == 1;
         }
     };
 
     try {
-        ResultSet rs = stmt.executeQuery("SELECT idKamar, no_kamar FROM kamar");
+        // Ambil idKamar, no_kamar, dan status dari database
+        ResultSet rs = stmt.executeQuery("SELECT idKamar, no_kamar, status FROM kamar");
 
         while (rs.next()) {
             model.addRow(new Object[]{
                 rs.getInt("idKamar"),
-                rs.getString("no_kamar")
+                rs.getString("no_kamar"),
+                rs.getString("status")
             });
         }
 
         tabel_kamar.setModel(model);
 
-        // Tambahkan listener setelah set model
+        // Listener untuk perubahan data tabel
         model.addTableModelListener(e -> {
             int row = e.getFirstRow();
             int column = e.getColumn();
 
-            if (column == 1) { // No Kamar diubah
+            if (column == 1) { // Kolom No Kamar diubah
                 int id = (int) model.getValueAt(row, 0);
                 String newNoKamar = model.getValueAt(row, 1).toString();
 
@@ -89,6 +91,7 @@ public class Managerv2 extends javax.swing.JFrame {
 
 
 
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -102,16 +105,15 @@ public class Managerv2 extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tabel_kamar = new javax.swing.JTable();
-        input_kamar = new javax.swing.JTextField();
+        input_carikamar = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        submit_kamar = new javax.swing.JButton();
+        btn_carikamar = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         side_datakamar = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
+        btn_tambahkamar = new javax.swing.JButton();
+        btn_edit = new javax.swing.JButton();
+        btn_hapus = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -174,18 +176,18 @@ public class Managerv2 extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(tabel_kamar);
 
-        input_kamar.addActionListener(new java.awt.event.ActionListener() {
+        input_carikamar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                input_kamarActionPerformed(evt);
+                input_carikamarActionPerformed(evt);
             }
         });
 
         jLabel2.setText("Nomor kamar :");
 
-        submit_kamar.setText("Cari");
-        submit_kamar.addActionListener(new java.awt.event.ActionListener() {
+        btn_carikamar.setText("Cari");
+        btn_carikamar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                submit_kamarActionPerformed(evt);
+                btn_carikamarActionPerformed(evt);
             }
         });
 
@@ -199,15 +201,7 @@ public class Managerv2 extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setText("Data Tamu");
-        jButton1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
-        jButton2.setText("Reservasi");
+        jButton2.setText("Dashboard");
         jButton2.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -223,7 +217,6 @@ public class Managerv2 extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(side_datakamar, javax.swing.GroupLayout.DEFAULT_SIZE, 142, Short.MAX_VALUE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -232,37 +225,35 @@ public class Managerv2 extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(17, 17, 17)
                 .addComponent(side_datakamar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton2)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jButton3.setBackground(new java.awt.Color(0, 102, 102));
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/mycompany/image/more.png"))); // NOI18N
-        jButton3.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        btn_tambahkamar.setBackground(new java.awt.Color(0, 102, 102));
+        btn_tambahkamar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/mycompany/image/more.png"))); // NOI18N
+        btn_tambahkamar.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btn_tambahkamar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                btn_tambahkamarActionPerformed(evt);
             }
         });
 
-        jButton4.setBackground(new java.awt.Color(0, 102, 102));
-        jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/mycompany/image/edit.png"))); // NOI18N
-        jButton4.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        btn_edit.setBackground(new java.awt.Color(0, 102, 102));
+        btn_edit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/mycompany/image/edit.png"))); // NOI18N
+        btn_edit.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btn_edit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                btn_editActionPerformed(evt);
             }
         });
 
-        jButton5.setBackground(new java.awt.Color(0, 102, 102));
-        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/mycompany/image/delete (1).png"))); // NOI18N
-        jButton5.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
+        btn_hapus.setBackground(new java.awt.Color(0, 102, 102));
+        btn_hapus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/mycompany/image/delete.png"))); // NOI18N
+        btn_hapus.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btn_hapus.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
+                btn_hapusActionPerformed(evt);
             }
         });
 
@@ -286,15 +277,15 @@ public class Managerv2 extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(input_kamar, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(input_carikamar, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(submit_kamar)
+                        .addComponent(btn_carikamar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btn_tambahkamar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btn_edit, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btn_hapus, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(10, 10, 10))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 578, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
@@ -308,13 +299,13 @@ public class Managerv2 extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_tambahkamar, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_edit, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_hapus, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(jLabel2)
-                                .addComponent(input_kamar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(submit_kamar)))
+                                .addComponent(input_carikamar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btn_carikamar)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -324,37 +315,37 @@ public class Managerv2 extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void input_kamarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_input_kamarActionPerformed
+    private void input_carikamarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_input_carikamarActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_input_kamarActionPerformed
+    }//GEN-LAST:event_input_carikamarActionPerformed
 
-    private void submit_kamarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submit_kamarActionPerformed
+    private void btn_carikamarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_carikamarActionPerformed
         // TODO add your handling code here:
         // Ambil input nomor kamar dari textfield
-    String noKamar = input_kamar.getText().trim();
-
-    // Validasi input
-    if (noKamar.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Nomor kamar tidak boleh kosong.");
+         String keyword = input_carikamar.getText().trim();
+    if (keyword.isEmpty()) {
+        tampilkanDataKamar();
         return;
     }
 
-    // Insert ke database
-    try {
-        String sql = "INSERT INTO kamar (no_kamar) VALUES ('" + noKamar + "')";
-        int rowsAffected = stmt.executeUpdate(sql);
+    DefaultTableModel model = (DefaultTableModel) tabel_kamar.getModel();
+    model.setRowCount(0);
 
-        if (rowsAffected > 0) {
-            JOptionPane.showMessageDialog(this, "Data kamar berhasil disimpan.");
-            input_kamar.setText(""); // Kosongkan field input
-            tampilkanDataKamar();    // Refresh tabel
-        } else {
-            JOptionPane.showMessageDialog(this, "Gagal menyimpan data kamar.");
+    try {
+        String sql = "SELECT * FROM kamar WHERE no_kamar LIKE '%" + keyword + "%'";
+        ResultSet rs = stmt.executeQuery(sql);
+
+        while (rs.next()) {
+            Object[] row = {
+                rs.getInt("idKamar"),
+                rs.getString("no_kamar")
+            };
+            model.addRow(row);
         }
     } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this, "Error saat menyimpan data: " + e.getMessage());
+        JOptionPane.showMessageDialog(this, "Gagal mencari data kamar: " + e.getMessage());
     }
-    }//GEN-LAST:event_submit_kamarActionPerformed
+    }//GEN-LAST:event_btn_carikamarActionPerformed
 
     private void side_datakamarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_side_datakamarActionPerformed
         // TODO add your handling code here:
@@ -366,18 +357,9 @@ public class Managerv2 extends javax.swing.JFrame {
         
     }//GEN-LAST:event_side_datakamarActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        Tamu tamuFrame = new Tamu();
-    tamuFrame.setVisible(true);
-
-    // Tutup form saat ini (opsional)
-    this.dispose();
-    }//GEN-LAST:event_jButton1ActionPerformed
-
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        Reservasi reservasiFrame = new Reservasi();
+        DashboardManagerUi reservasiFrame = new DashboardManagerUi();
         reservasiFrame.setVisible(true);
 
     // Tutup form saat ini (opsional)
@@ -388,17 +370,78 @@ public class Managerv2 extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_tabel_kamarInputMethodTextChanged
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void btn_tambahkamarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_tambahkamarActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
+         String noKamar = JOptionPane.showInputDialog(this, "Masukkan nomor kamar:");
+    if (noKamar != null && !noKamar.trim().isEmpty()) {
+        try {
+            String sql = "INSERT INTO kamar (no_kamar) VALUES ('" + noKamar.trim() + "')";
+            int result = stmt.executeUpdate(sql);
+            if (result > 0) {
+                JOptionPane.showMessageDialog(this, "Kamar berhasil ditambahkan.");
+                tampilkanDataKamar();
+            } else {
+                JOptionPane.showMessageDialog(this, "Gagal menambahkan kamar.");
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage());
+        }
+    }
+    }//GEN-LAST:event_btn_tambahkamarActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void btn_editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_editActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
+        int selectedRow = tabel_kamar.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih kamar yang ingin diedit.");
+        return;
+    }
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+    int id = (int) tabel_kamar.getValueAt(selectedRow, 0);
+    String currentNoKamar = tabel_kamar.getValueAt(selectedRow, 1).toString();
+    String newNoKamar = JOptionPane.showInputDialog(this, "Edit Nomor Kamar:", currentNoKamar);
+
+    if (newNoKamar != null && !newNoKamar.trim().isEmpty()) {
+        try {
+            String sql = "UPDATE kamar SET no_kamar = '" + newNoKamar.trim() + "' WHERE idKamar = " + id;
+            int result = stmt.executeUpdate(sql);
+            if (result > 0) {
+                JOptionPane.showMessageDialog(this, "Nomor kamar berhasil diperbarui.");
+                tampilkanDataKamar();
+            } else {
+                JOptionPane.showMessageDialog(this, "Gagal memperbarui nomor kamar.");
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error saat update: " + e.getMessage());
+        }
+    }
+    }//GEN-LAST:event_btn_editActionPerformed
+
+    private void btn_hapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_hapusActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton5ActionPerformed
+        int selectedRow = tabel_kamar.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih kamar yang ingin dihapus.");
+        return;
+    }
+
+    int id = (int) tabel_kamar.getValueAt(selectedRow, 0);
+    int confirm = JOptionPane.showConfirmDialog(this, "Yakin ingin menghapus kamar ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+    if (confirm == JOptionPane.YES_OPTION) {
+        try {
+            String sql = "DELETE FROM kamar WHERE idKamar = " + id;
+            int result = stmt.executeUpdate(sql);
+            if (result > 0) {
+                JOptionPane.showMessageDialog(this, "Kamar berhasil dihapus.");
+                tampilkanDataKamar();
+            } else {
+                JOptionPane.showMessageDialog(this, "Gagal menghapus kamar.");
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error saat menghapus kamar: " + e.getMessage());
+        }
+    }
+    }//GEN-LAST:event_btn_hapusActionPerformed
 
     private void tabel_kamarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabel_kamarMouseClicked
         // TODO add your handling code here:
@@ -445,12 +488,12 @@ public class Managerv2 extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField input_kamar;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btn_carikamar;
+    private javax.swing.JButton btn_edit;
+    private javax.swing.JButton btn_hapus;
+    private javax.swing.JButton btn_tambahkamar;
+    private javax.swing.JTextField input_carikamar;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
@@ -460,7 +503,6 @@ public class Managerv2 extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton side_datakamar;
-    private javax.swing.JButton submit_kamar;
     private javax.swing.JTable tabel_kamar;
     // End of variables declaration//GEN-END:variables
 }
