@@ -3,18 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Farrel/Documents/NetBeansProjects/PBO/src/pbo/PBO.java</file>
-            <file>file:/C:/Users/Farrel/Documents/NetBeansProjects/PBO/src/tesKoneksi.java</file>
-            <file>file:/C:/Users/Farrel/Documents/NetBeansProjects/PBO/src/Database.java</file>
-            <file>file:/C:/Users/Farrel/Documents/NetBeansProjects/PBO/src/Manager.java</file>
-            <file>file:/C:/Users/Farrel/Documents/NetBeansProjects/PBO/src/FormCheckIn.java</file>
-            <file>file:/C:/Users/Farrel/Documents/NetBeansProjects/PBO/src/Tamu.java</file>
-            <file>file:/C:/Users/Farrel/Documents/NetBeansProjects/PBO/src/Reservasi.java</file>
-            <file>file:/C:/Users/Farrel/Documents/NetBeansProjects/PBO/src/DataReservasi.java</file>
             <file>file:/C:/Users/Farrel/Documents/NetBeansProjects/PBO/src/DashboardManagerUi.java</file>
             <file>file:/C:/Users/Farrel/Documents/NetBeansProjects/PBO/src/Login.java</file>
-            <file>file:/C:/Users/Farrel/Documents/NetBeansProjects/PBO/src/Restoran.java</file>
+            <file>file:/C:/Users/Farrel/Documents/NetBeansProjects/PBO/src/User.java</file>
             <file>file:/C:/Users/Farrel/Documents/NetBeansProjects/PBO/src/Managerv2.java</file>
+            <file>file:/C:/Users/Farrel/Documents/NetBeansProjects/PBO/src/Manager.java</file>
         </group>
     </open-files>
 </project-private>

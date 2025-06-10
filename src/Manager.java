@@ -1,394 +1,113 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.JOptionPane;
 
-/**
- *
- * @author Farrel
- */
-public class Manager extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Manager
-     */
-    // Variabel global untuk koneksi dan statement
+public class Manager extends User {
     private Connection conn;
-    private Statement stmt;
-    public Manager() {
-        initComponents();
-        initDatabase();
-        tampilkanDataKamar();
-    }
-    
-    
-     private void initDatabase() {
-        try {
-            conn = Database.getConnection();
-            stmt = conn.createStatement();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Gagal koneksi ke database: " + e.getMessage());
-        }
-    }
-    
-    
-    private void tampilkanDataKamar() {
-    DefaultTableModel model = new DefaultTableModel(new Object[]{"ID", "No Kamar"}, 0) {
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            // Kolom No Kamar (index 1) saja yang bisa diubah
-            return column == 1;
-        }
-    };
 
-    try {
-        ResultSet rs = stmt.executeQuery("SELECT idKamar, no_kamar FROM kamar");
+    public Manager() throws SQLException {
+        this.conn = Database.getConnection(); // Inisialisasi koneksi di constructor
+    }
+
+    public List<Object[]> getDataKamar() {
+        List<Object[]> data = new ArrayList<>();
+        String query = "SELECT idKamar, no_kamar, status FROM kamar";
+
+        try (
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query)
+        ) {
+            while (rs.next()) {
+                Object[] row = new Object[]{
+                    rs.getInt("idKamar"),
+                    rs.getString("no_kamar"),
+                    rs.getString("status")
+                };
+                data.add(row);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return data;
+    }
+
+    public boolean updateNoKamar(int idKamar, String newNoKamar) {
+        String sql = "UPDATE kamar SET no_kamar = ? WHERE idKamar = ?";
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setString(1, newNoKamar);
+            pst.setInt(2, idKamar);
+            return pst.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public List<Object[]> cariKamar(String keyword) throws SQLException {
+    List<Object[]> data = new ArrayList<>();
+    String sql = "SELECT idKamar, no_kamar, status FROM kamar WHERE no_kamar LIKE ?";
+
+    if (conn == null || conn.isClosed()) {
+        conn = Database.getConnection();
+    }
+
+    try (PreparedStatement pst = conn.prepareStatement(sql)) {
+        pst.setString(1, "%" + keyword + "%");
+        ResultSet rs = pst.executeQuery();
 
         while (rs.next()) {
-            model.addRow(new Object[]{
+            Object[] row = {
                 rs.getInt("idKamar"),
-                rs.getString("no_kamar")
-            });
+                rs.getString("no_kamar"),
+                rs.getString("status")
+            };
+            data.add(row);
         }
+    }
 
-        tabel_kamar.setModel(model);
+    return data;
+}
+    
+    public boolean tambahKamar(String noKamar) throws SQLException {
+    if (conn == null || conn.isClosed()) {
+        conn = Database.getConnection();
+    }
 
-        // Tambahkan listener setelah set model
-        model.addTableModelListener(e -> {
-            int row = e.getFirstRow();
-            int column = e.getColumn();
+    String sql = "INSERT INTO kamar (no_kamar) VALUES (?)";
+    try (PreparedStatement pst = conn.prepareStatement(sql)) {
+        pst.setString(1, noKamar.trim());
+        return pst.executeUpdate() > 0;
+    }
+}
 
-            if (column == 1) { // No Kamar diubah
-                int id = (int) model.getValueAt(row, 0);
-                String newNoKamar = model.getValueAt(row, 1).toString();
+    public boolean editNoKamar(int idKamar, String noKamarBaru) throws SQLException {
+    if (conn == null || conn.isClosed()) {
+        conn = Database.getConnection();
+    }
 
-                try {
-                    String sql = "UPDATE kamar SET no_kamar = '" + newNoKamar + "' WHERE idKamar = " + id;
-                    int result = stmt.executeUpdate(sql);
-                    if (result > 0) {
-                        System.out.println("Data kamar berhasil diubah.");
-                    } else {
-                        System.out.println("Gagal mengubah data kamar.");
-                    }
-                } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(this, "Error update data: " + ex.getMessage());
-                }
-            }
-        });
+    String sql = "UPDATE kamar SET no_kamar = ? WHERE idKamar = ?";
+    try (PreparedStatement pst = conn.prepareStatement(sql)) {
+        pst.setString(1, noKamarBaru.trim());
+        pst.setInt(2, idKamar);
+        return pst.executeUpdate() > 0;
+    }
+}
 
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this, "Gagal mengambil data: " + e.getMessage());
+    public boolean hapusKamar(int idKamar) throws SQLException {
+    if (conn == null || conn.isClosed()) {
+        conn = Database.getConnection();
+    }
+
+    String sql = "DELETE FROM kamar WHERE idKamar = ?";
+    try (PreparedStatement pst = conn.prepareStatement(sql)) {
+        pst.setInt(1, idKamar);
+        return pst.executeUpdate() > 0;
     }
 }
 
 
-
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-
-        jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tabel_kamar = new javax.swing.JTable();
-        input_kamar = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        submit_kamar = new javax.swing.JButton();
-        hapus_kamar = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
-        side_datakamar = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
-        jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
-        jMenu2 = new javax.swing.JMenu();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jPanel1.setBackground(new java.awt.Color(204, 255, 255));
-
-        jLabel1.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
-        jLabel1.setText("Manajemen Data Kamar");
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
-                .addContainerGap(13, Short.MAX_VALUE))
-        );
-
-        tabel_kamar.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
-            },
-            new String [] {
-                "ID Kamar", "Nomer Kamar"
-            }
-        ));
-        jScrollPane1.setViewportView(tabel_kamar);
-
-        input_kamar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                input_kamarActionPerformed(evt);
-            }
-        });
-
-        jLabel2.setText("Nomer Kamar:");
-
-        submit_kamar.setText("Kirim");
-        submit_kamar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                submit_kamarActionPerformed(evt);
-            }
-        });
-
-        hapus_kamar.setText("Hapus");
-        hapus_kamar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                hapus_kamarActionPerformed(evt);
-            }
-        });
-
-        jPanel2.setBackground(new java.awt.Color(204, 255, 255));
-
-        side_datakamar.setText("Data Kamar");
-        side_datakamar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                side_datakamarActionPerformed(evt);
-            }
-        });
-
-        jButton1.setText("Dashboard");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(side_datakamar, javax.swing.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(11, 11, 11)
-                .addComponent(side_datakamar, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(309, Short.MAX_VALUE))
-        );
-
-        jMenu1.setText("File");
-        jMenuBar1.add(jMenu1);
-
-        jMenu2.setText("Edit");
-        jMenuBar1.add(jMenu2);
-
-        setJMenuBar(jMenuBar1);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(hapus_kamar, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(input_kamar, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(submit_kamar)))
-                .addContainerGap(106, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(11, 11, 11)
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(input_kamar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(submit_kamar)))
-                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(hapus_kamar)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 403, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap())
-        );
-
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
-
-    private void input_kamarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_input_kamarActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_input_kamarActionPerformed
-
-    private void submit_kamarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submit_kamarActionPerformed
-        // TODO add your handling code here:
-        // Ambil input nomor kamar dari textfield
-    String noKamar = input_kamar.getText().trim();
-
-    // Validasi input
-    if (noKamar.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Nomor kamar tidak boleh kosong.");
-        return;
-    }
-
-    // Insert ke database
-    try {
-        String sql = "INSERT INTO kamar (no_kamar) VALUES ('" + noKamar + "')";
-        int rowsAffected = stmt.executeUpdate(sql);
-
-        if (rowsAffected > 0) {
-            JOptionPane.showMessageDialog(this, "Data kamar berhasil disimpan.");
-            input_kamar.setText(""); // Kosongkan field input
-            tampilkanDataKamar();    // Refresh tabel
-        } else {
-            JOptionPane.showMessageDialog(this, "Gagal menyimpan data kamar.");
-        }
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this, "Error saat menyimpan data: " + e.getMessage());
-    }
-    }//GEN-LAST:event_submit_kamarActionPerformed
-
-    private void hapus_kamarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hapus_kamarActionPerformed
-           // TODO add your handling code here:
-           int selectedRow = tabel_kamar.getSelectedRow();
-
-if (selectedRow == -1) {
-    JOptionPane.showMessageDialog(this, "Pilih baris yang ingin dihapus terlebih dahulu.");
-    return;
 }
 
-int confirm = JOptionPane.showConfirmDialog(this, "Yakin ingin menghapus data ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
-if (confirm == JOptionPane.YES_OPTION) {
-    int id = (int) tabel_kamar.getValueAt(selectedRow, 0);
-
-    try {
-        String sql = "DELETE FROM kamar WHERE idKamar = " + id;
-        int result = stmt.executeUpdate(sql);
-        if (result > 0) {
-            ((DefaultTableModel) tabel_kamar.getModel()).removeRow(selectedRow);
-            JOptionPane.showMessageDialog(this, "Data berhasil dihapus.");
-        } else {
-            JOptionPane.showMessageDialog(this, "Data gagal dihapus.");
-        }
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this, "Error saat menghapus data: " + e.getMessage());
-    }
-}
-
-    }//GEN-LAST:event_hapus_kamarActionPerformed
-
-    private void side_datakamarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_side_datakamarActionPerformed
-        // TODO add your handling code here:
-        Manager ManagerFrame = new Manager();
-    ManagerFrame.setVisible(true);
-
-    // Tutup form saat ini (opsional)
-    this.dispose();
-        
-    }//GEN-LAST:event_side_datakamarActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        DashboardManagerUi ManagerFrame = new DashboardManagerUi();
-    ManagerFrame.setVisible(true);
-
-    // Tutup form saat ini (opsional)
-    this.dispose();
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Manager.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Manager.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Manager.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Manager.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Manager().setVisible(true);
-            }
-        });
-    }
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton hapus_kamar;
-    private javax.swing.JTextField input_kamar;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JButton side_datakamar;
-    private javax.swing.JButton submit_kamar;
-    private javax.swing.JTable tabel_kamar;
-    // End of variables declaration//GEN-END:variables
-}

@@ -2,12 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.ResultSet;
+
 import java.sql.SQLException;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
+import java.util.List;
 
 /**
  *
@@ -19,75 +18,57 @@ public class Managerv2 extends javax.swing.JFrame {
      * Creates new form Manager
      */
     // Variabel global untuk koneksi dan statement
-    private Connection conn;
-    private Statement stmt;
+    private Manager manager;
     public Managerv2() {
+        
+        try {
+            manager = new Manager();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Gagal koneksi: " + ex.getMessage());
+        }
+        
         initComponents();
-        initDatabase();
         tampilkanDataKamar();
     }
     
-    
-     private void initDatabase() {
-        try {
-            conn = Database.getConnection();
-            stmt = conn.createStatement();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Gagal koneksi ke database: " + e.getMessage());
-        }
-    }
+ 
     
     
-   private void tampilkanDataKamar() {
+  private void tampilkanDataKamar() {
     DefaultTableModel model = new DefaultTableModel(new Object[]{"ID", "No Kamar", "Status"}, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
-            // Hanya kolom No Kamar (index 1) yang bisa diubah
-            return column == 1;
+            return column == 1; // hanya "No Kamar" yang bisa diubah
         }
     };
 
-    try {
-        // Ambil idKamar, no_kamar, dan status dari database
-        ResultSet rs = stmt.executeQuery("SELECT idKamar, no_kamar, status FROM kamar");
-
-        while (rs.next()) {
-            model.addRow(new Object[]{
-                rs.getInt("idKamar"),
-                rs.getString("no_kamar"),
-                rs.getString("status")
-            });
-        }
-
-        tabel_kamar.setModel(model);
-
-        // Listener untuk perubahan data tabel
-        model.addTableModelListener(e -> {
-            int row = e.getFirstRow();
-            int column = e.getColumn();
-
-            if (column == 1) { // Kolom No Kamar diubah
-                int id = (int) model.getValueAt(row, 0);
-                String newNoKamar = model.getValueAt(row, 1).toString();
-
-                try {
-                    String sql = "UPDATE kamar SET no_kamar = '" + newNoKamar + "' WHERE idKamar = " + id;
-                    int result = stmt.executeUpdate(sql);
-                    if (result > 0) {
-                        System.out.println("Data kamar berhasil diubah.");
-                    } else {
-                        System.out.println("Gagal mengubah data kamar.");
-                    }
-                } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(this, "Error update data: " + ex.getMessage());
-                }
-            }
-        });
-
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this, "Gagal mengambil data: " + e.getMessage());
+    // Ambil data dari Manager
+    List<Object[]> data = manager.getDataKamar();
+    for (Object[] row : data) {
+        model.addRow(row);
     }
+
+    tabel_kamar.setModel(model);
+
+    // Listener untuk perubahan
+    model.addTableModelListener(e -> {
+        int row = e.getFirstRow();
+        int column = e.getColumn();
+
+        if (column == 1) {
+            int id = (int) model.getValueAt(row, 0);
+            String newNoKamar = model.getValueAt(row, 1).toString();
+
+            boolean updated = manager.updateNoKamar(id, newNoKamar);
+            if (updated) {
+                System.out.println("Data kamar berhasil diubah.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Gagal mengubah data kamar.");
+            }
+        }
+    });
 }
+
 
 
 
@@ -323,23 +304,19 @@ public class Managerv2 extends javax.swing.JFrame {
         // TODO add your handling code here:
         // Ambil input nomor kamar dari textfield
          String keyword = input_carikamar.getText().trim();
-    if (keyword.isEmpty()) {
-        tampilkanDataKamar();
-        return;
-    }
-
     DefaultTableModel model = (DefaultTableModel) tabel_kamar.getModel();
-    model.setRowCount(0);
+    model.setRowCount(0); // Bersihkan tabel dulu
 
     try {
-        String sql = "SELECT * FROM kamar WHERE no_kamar LIKE '%" + keyword + "%'";
-        ResultSet rs = stmt.executeQuery(sql);
+        List<Object[]> data;
 
-        while (rs.next()) {
-            Object[] row = {
-                rs.getInt("idKamar"),
-                rs.getString("no_kamar")
-            };
+        if (keyword.isEmpty()) {
+            data = manager.getDataKamar(); // tampilkan semua jika kosong
+        } else {
+            data = manager.cariKamar(keyword); // pencarian berdasarkan keyword
+        }
+
+        for (Object[] row : data) {
             model.addRow(row);
         }
     } catch (SQLException e) {
@@ -350,7 +327,7 @@ public class Managerv2 extends javax.swing.JFrame {
     private void side_datakamarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_side_datakamarActionPerformed
         // TODO add your handling code here:
         Managerv2 ManagerFrame = new Managerv2();
-    ManagerFrame.setVisible(true);
+        ManagerFrame.setVisible(true);
 
     // Tutup form saat ini (opsional)
     this.dispose();
@@ -371,15 +348,13 @@ public class Managerv2 extends javax.swing.JFrame {
     }//GEN-LAST:event_tabel_kamarInputMethodTextChanged
 
     private void btn_tambahkamarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_tambahkamarActionPerformed
-        // TODO add your handling code here:
-         String noKamar = JOptionPane.showInputDialog(this, "Masukkan nomor kamar:");
+        String noKamar = JOptionPane.showInputDialog(this, "Masukkan nomor kamar:");
     if (noKamar != null && !noKamar.trim().isEmpty()) {
         try {
-            String sql = "INSERT INTO kamar (no_kamar) VALUES ('" + noKamar.trim() + "')";
-            int result = stmt.executeUpdate(sql);
-            if (result > 0) {
+            boolean berhasil = manager.tambahKamar(noKamar);
+            if (berhasil) {
                 JOptionPane.showMessageDialog(this, "Kamar berhasil ditambahkan.");
-                tampilkanDataKamar();
+                tampilkanDataKamar(); // panggil ulang untuk refresh tabel
             } else {
                 JOptionPane.showMessageDialog(this, "Gagal menambahkan kamar.");
             }
@@ -390,8 +365,7 @@ public class Managerv2 extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_tambahkamarActionPerformed
 
     private void btn_editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_editActionPerformed
-        // TODO add your handling code here:
-        int selectedRow = tabel_kamar.getSelectedRow();
+         int selectedRow = tabel_kamar.getSelectedRow();
     if (selectedRow == -1) {
         JOptionPane.showMessageDialog(this, "Pilih kamar yang ingin diedit.");
         return;
@@ -403,9 +377,8 @@ public class Managerv2 extends javax.swing.JFrame {
 
     if (newNoKamar != null && !newNoKamar.trim().isEmpty()) {
         try {
-            String sql = "UPDATE kamar SET no_kamar = '" + newNoKamar.trim() + "' WHERE idKamar = " + id;
-            int result = stmt.executeUpdate(sql);
-            if (result > 0) {
+            boolean berhasil = manager.editNoKamar(id, newNoKamar);
+            if (berhasil) {
                 JOptionPane.showMessageDialog(this, "Nomor kamar berhasil diperbarui.");
                 tampilkanDataKamar();
             } else {
@@ -418,7 +391,6 @@ public class Managerv2 extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_editActionPerformed
 
     private void btn_hapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_hapusActionPerformed
-        // TODO add your handling code here:
         int selectedRow = tabel_kamar.getSelectedRow();
     if (selectedRow == -1) {
         JOptionPane.showMessageDialog(this, "Pilih kamar yang ingin dihapus.");
@@ -429,9 +401,8 @@ public class Managerv2 extends javax.swing.JFrame {
     int confirm = JOptionPane.showConfirmDialog(this, "Yakin ingin menghapus kamar ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
     if (confirm == JOptionPane.YES_OPTION) {
         try {
-            String sql = "DELETE FROM kamar WHERE idKamar = " + id;
-            int result = stmt.executeUpdate(sql);
-            if (result > 0) {
+            boolean sukses = manager.hapusKamar(id);
+            if (sukses) {
                 JOptionPane.showMessageDialog(this, "Kamar berhasil dihapus.");
                 tampilkanDataKamar();
             } else {

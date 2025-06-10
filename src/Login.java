@@ -1,10 +1,6 @@
 
-import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import javax.swing.JOptionPane;
-import java.sql.PreparedStatement;
+
 
 
 public class Login extends javax.swing.JFrame {
@@ -17,55 +13,34 @@ public class Login extends javax.swing.JFrame {
         LoginFrame.setLocationRelativeTo(null); 
     }
   
-    private Connection conn;
-    private Statement stmt;
     public Login() {
         initComponents();
-        initDatabase();
     }
-    
-    private void initDatabase() {
-        try {
-            conn = Database.getConnection();
-            stmt = conn.createStatement();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Gagal koneksi ke database: " + e.getMessage());
-        }
-    }
-    
+        
     public void loginUser() {
     String username = jTextField1.getText();
     String password = new String(jPasswordField1.getPassword());
 
-    try {
-        String sql = "SELECT * FROM user WHERE username = ? AND password = ?";
-        PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setString(1, username);
-        pst.setString(2, password); // dalam produksi harus hash!
-        ResultSet rs = pst.executeQuery();
+    User user = User.login(username, password);
 
-        if (rs.next()) {
-            String role = rs.getString("role");
-            JOptionPane.showMessageDialog(null, "Login berhasil sebagai " + role);
+    if (user != null) {
+        JOptionPane.showMessageDialog(null, "Login berhasil sebagai " + user.getRole());
 
-            // Arahkan berdasarkan role
-            if (role.equals("manager")) {
-                new DashboardManagerUi().setVisible(true);
-            } else if (role.equals("staff")) {
-                new Reservasi().setVisible(true);
-            }
-
-            this.dispose(); // Tutup form login
-        } else {
-            JOptionPane.showMessageDialog(null, "Username atau password salah.");
+        if (user.getRole().equals("manager")) {
+            new DashboardManagerUi().setVisible(true);
+        } else if (user.getRole().equals("staff")) {
+            new Reservasi().setVisible(true);
         }
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(null, "Gagal login: " + e.getMessage());
+
+        this.dispose();
+    } else {
+        JOptionPane.showMessageDialog(null, "Username atau password salah.");
     }
-}
-
-
- 
+    
+   }   
+    
+  
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {

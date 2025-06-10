@@ -21,6 +21,9 @@ public class DashboardManagerUi extends javax.swing.JFrame {
      */
     private Connection conn;
     private Statement stmt;
+    private String username;
+   
+    
     public DashboardManagerUi() {
         initComponents();
         initDatabase();
@@ -330,6 +333,10 @@ public class DashboardManagerUi extends javax.swing.JFrame {
 
     private void btn_restoranActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_restoranActionPerformed
         // TODO add your handling code here:
+        Restoran managerFrame = new Restoran();
+        managerFrame.setVisible(true);
+    // Tutup form saat ini (opsional)
+    this.dispose();
     }//GEN-LAST:event_btn_restoranActionPerformed
 
     private void btn_logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_logoutActionPerformed
