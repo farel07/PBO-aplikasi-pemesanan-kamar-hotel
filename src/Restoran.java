@@ -2,6 +2,15 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
+import java.util.ArrayList;
+
+
 
 /**
  *
@@ -9,12 +18,106 @@
  */
 public class Restoran extends javax.swing.JFrame {
 
+    private TamuClass tamuClass = new TamuClass();
+    private Menu menu = new Menu();
+    private ArrayList<Object[]> pesanan = new ArrayList<>();
+
     /**
      * Creates new form Restoran
      */
     public Restoran() {
         initComponents();
+        isiComboBoxTamu();
+        tampilkanDataMenu();
+
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"ID Menu", "Nama", "Harga", "Qty"}, 0);
+table_pesanan.setModel(model);
+
+// Sembunyikan kolom ID Menu
+table_pesanan.getColumnModel().getColumn(0).setMinWidth(0);
+table_pesanan.getColumnModel().getColumn(0).setMaxWidth(0);
+table_pesanan.getColumnModel().getColumn(0).setWidth(0);
+
+
+
     }
+
+
+    
+    private void isiComboBoxTamu() {
+    try {
+        input_tamu.removeAllItems();
+        List<ItemCombo> daftarTamu = tamuClass.getAllTamu();
+        for (ItemCombo item : daftarTamu) {
+            input_tamu.addItem(item);
+        }
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Gagal memuat data tamu: " + e.getMessage());
+    }
+}
+
+private int ambilIdTamu() {
+    ItemCombo selected = (ItemCombo) input_tamu.getSelectedItem();
+    return selected != null ? selected.getId() : -1;
+}
+
+
+private void tampilkanDataMenu() {
+    DefaultTableModel model = new DefaultTableModel(new Object[]{"ID", "Nama", "Harga"}, 0) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return column == 1 || column == 2;
+        }
+    };
+
+    // Ambil data dari class TamuClass
+    for (Object[] row : menu.getDataMenu()) {
+        model.addRow(row);
+    }
+
+    table_makanan.setModel(model);
+
+    model.addTableModelListener(e -> {
+        int row = e.getFirstRow();
+        int column = e.getColumn();
+
+        if (column == 1) {
+            int id = (int) model.getValueAt(row, 0);
+            String newNama = model.getValueAt(row, 1).toString();
+            int harga = (int) model.getValueAt(row, 2);
+
+
+            boolean updated = menu.updateDataMenu(id, newNama, harga);
+            if (updated) {
+                System.out.println("Data tamu berhasil diubah.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Gagal mengubah data menu.");
+            }
+        }
+    });
+}
+
+
+private void hitungTotalHarga() {
+    DefaultTableModel model = (DefaultTableModel) table_pesanan.getModel();
+    int total = 0;
+
+    for (int i = 0; i < model.getRowCount(); i++) {
+        int harga = (int) model.getValueAt(i, 2);
+        int qty = (int) model.getValueAt(i, 3);
+        total += harga * qty;
+    }
+
+    total_harga.setText("Rp " + total);
+}
+
+
+
+
+
+
+ 
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -26,24 +129,27 @@ public class Restoran extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        table_makanan = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jLabel2 = new javax.swing.JLabel();
-        jSpinner1 = new javax.swing.JSpinner();
+        input_jumlah = new javax.swing.JSpinner();
         jLabel3 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        table_pesanan = new javax.swing.JTable();
         jLabel5 = new javax.swing.JLabel();
+        btn_bayar = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        input_tamu = new javax.swing.JComboBox<>();
+        btn_tambah_menu = new javax.swing.JButton();
+        btn_hapus_menu = new javax.swing.JButton();
+        btn_tambah = new javax.swing.JButton();
+        total_harga = new javax.swing.JTextField();
+        btn_hapuspesanan = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        table_makanan.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null},
                 {null, null},
@@ -54,7 +160,7 @@ public class Restoran extends javax.swing.JFrame {
                 "Nama", "Harga"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(table_makanan);
 
         jPanel1.setBackground(new java.awt.Color(204, 255, 255));
         jPanel1.setPreferredSize(new java.awt.Dimension(627, 86));
@@ -84,44 +190,67 @@ public class Restoran extends javax.swing.JFrame {
                 .addContainerGap(30, Short.MAX_VALUE))
         );
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox1ActionPerformed(evt);
-            }
-        });
-
-        jLabel2.setText("Pilih Menu :");
-
         jLabel3.setText("Jumlah :");
-
-        jButton1.setText("Tambahkan");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
 
         jLabel4.setText("Semua Pesanan :");
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        table_pesanan.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "Nama", "Harga"
+                "Nama", "Harga", "Qty"
             }
         ));
-        jScrollPane2.setViewportView(jTable2);
-
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane3.setViewportView(jTextArea1);
+        jScrollPane2.setViewportView(table_pesanan);
 
         jLabel5.setText("Total Harga :");
+
+        btn_bayar.setText("Bayar");
+        btn_bayar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_bayarActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setText("Tamu:");
+
+        input_tamu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                input_tamuActionPerformed(evt);
+            }
+        });
+
+        btn_tambah_menu.setText("Tambah Menu");
+        btn_tambah_menu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_tambah_menuActionPerformed(evt);
+            }
+        });
+
+        btn_hapus_menu.setText("Hapus");
+        btn_hapus_menu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_hapus_menuActionPerformed(evt);
+            }
+        });
+
+        btn_tambah.setText("Tambah");
+        btn_tambah.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_tambahActionPerformed(evt);
+            }
+        });
+
+        btn_hapuspesanan.setText("Hapus");
+        btn_hapuspesanan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_hapuspesananActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -132,28 +261,36 @@ public class Restoran extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 623, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 430, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(17, 17, 17)
+                        .addComponent(jLabel6)
+                        .addGap(18, 18, 18)
+                        .addComponent(input_tamu, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btn_tambah_menu)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btn_hapus_menu)
+                        .addGap(42, 42, 42)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(input_jumlah, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 5, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 366, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(btn_tambah)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGap(14, 14, 14)
-                                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(jButton1)
-                                            .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                                            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
-                                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 9, Short.MAX_VALUE)))
+                                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(btn_hapuspesanan)
+                                        .addGap(10, 10, 10))
+                                    .addComponent(btn_bayar, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
+                                    .addComponent(total_harga))))
+                        .addGap(9, 9, 9)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -161,40 +298,192 @@ public class Restoran extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1)
-                        .addGap(13, 13, 13)
+                        .addComponent(input_jumlah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(input_tamu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel6)
+                        .addComponent(btn_tambah_menu)
+                        .addComponent(btn_hapus_menu)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btn_tambah)
+                        .addGap(8, 8, 8)
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel5)
+                            .addComponent(btn_hapuspesanan))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(total_harga, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btn_bayar)
+                        .addContainerGap(15, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+                                         
 
-    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+    private void input_tamuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_input_tamuActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox1ActionPerformed
+        
+    }//GEN-LAST:event_input_tamuActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btn_tambah_menuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_tambah_menuActionPerformed
+    JTextField inputNama = new JTextField();
+    JTextField inputHarga = new JTextField();
+
+    Object[] message = {
+        "Nama Menu:", inputNama,
+        "Harga:", inputHarga
+    };
+
+    int option = JOptionPane.showConfirmDialog(this, message, "Tambah Menu", JOptionPane.OK_CANCEL_OPTION);
+    if (option == JOptionPane.OK_OPTION) {
+        try {
+            String nama = inputNama.getText();
+            int harga = Integer.parseInt(inputHarga.getText());
+
+            if (nama.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Nama menu tidak boleh kosong.");
+                return;
+            }
+
+            boolean success = menu.insertDataMenu(nama, harga);
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Menu berhasil ditambahkan.");
+                tampilkanDataMenu(); // Refresh tabel
+            } else {
+                JOptionPane.showMessageDialog(this, "Gagal menambahkan menu.");
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Harga harus berupa angka!");
+        }
+    }
+}                                               
+//GEN-LAST:event_btn_tambah_menuActionPerformed
+
+    
+
+    private void btn_hapus_menuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_hapus_menuActionPerformed
+    int selectedRow = table_makanan.getSelectedRow();
+
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih menu yang ingin dihapus terlebih dahulu.");
+        return;
+    }
+
+    int confirm = JOptionPane.showConfirmDialog(this, "Yakin ingin menghapus menu ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+    if (confirm == JOptionPane.YES_OPTION) {
+        int id = (int) table_makanan.getValueAt(selectedRow, 0);
+
+        boolean success = menu.hapusDataMenu(id);
+        if (success) {
+            JOptionPane.showMessageDialog(this, "Menu berhasil dihapus.");
+            tampilkanDataMenu(); // Refresh tabel
+        } else {
+            JOptionPane.showMessageDialog(this, "Gagal menghapus menu.");
+        }
+    }
+}//GEN-LAST:event_btn_hapus_menuActionPerformed
+
+    private void btn_tambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_tambahActionPerformed
+
+    int selectedRow = table_makanan.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih makanan terlebih dahulu!");
+        return;
+    }
+
+    int id = (int) table_makanan.getValueAt(selectedRow, 0); // ID Menu
+    String nama = table_makanan.getValueAt(selectedRow, 1).toString();
+    int harga = (int) table_makanan.getValueAt(selectedRow, 2);
+    int qtyInput = (int) input_jumlah.getValue();
+
+    if (qtyInput <= 0) {
+        JOptionPane.showMessageDialog(this, "Jumlah harus lebih dari 0!");
+        return;
+    }
+
+    DefaultTableModel model = (DefaultTableModel) table_pesanan.getModel();
+
+    // Cek apakah ID sudah ada
+    boolean ditemukan = false;
+    for (int i = 0; i < model.getRowCount(); i++) {
+        int idExisting = (int) model.getValueAt(i, 0);
+        if (idExisting == id) {
+            int qtyLama = (int) model.getValueAt(i, 3);
+            model.setValueAt(qtyLama + qtyInput, i, 3); // update qty
+            ditemukan = true;
+            break;
+        }
+    }
+
+    if (!ditemukan) {
+        model.addRow(new Object[]{id, nama, harga, qtyInput});
+    }
+
+    hitungTotalHarga();
+}//GEN-LAST:event_btn_tambahActionPerformed
+
+    private void btn_hapuspesananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_hapuspesananActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+        int selectedRow = table_pesanan.getSelectedRow();
+
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih pesanan yang ingin dihapus!");
+        return;
+    }
+
+    // Hapus dari tabel
+    DefaultTableModel model = (DefaultTableModel) table_pesanan.getModel();
+    model.removeRow(selectedRow);
+
+    // Hapus juga dari ArrayList pesanan
+    if (selectedRow < pesanan.size()) {
+        pesanan.remove(selectedRow);
+    }
+
+    // Hitung ulang total
+    hitungTotalHarga();
+    }
+
+    private void btn_bayarActionPerformed(java.awt.event.ActionEvent evt) {                                          
+       ItemCombo selectedTamu = (ItemCombo) input_tamu.getSelectedItem();
+    if (selectedTamu == null) {
+        JOptionPane.showMessageDialog(this, "Pilih tamu terlebih dahulu.");
+        return;
+    }
+
+    int idTamu = selectedTamu.getId();
+    int totalHarga = 0;
+
+    for (Object[] item : pesanan) {
+        int harga = (int) item[2];
+        int qty = (int) item[3];
+        totalHarga += harga * qty;
+    }
+
+    boolean berhasil = menu.insertTransaksi(idTamu, totalHarga, pesanan);
+    if (berhasil) {
+        JOptionPane.showMessageDialog(this, "Transaksi berhasil disimpan!");
+        pesanan.clear();
+        ((DefaultTableModel) table_pesanan.getModel()).setRowCount(0);
+        total_harga.setText("Rp 0");
+    } else {
+        JOptionPane.showMessageDialog(this, "Gagal menyimpan transaksi.");
+    }
+    }                                           
+
 
     /**
      * @param args the command line arguments
@@ -232,20 +521,23 @@ public class Restoran extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JButton btn_bayar;
+    private javax.swing.JButton btn_hapus_menu;
+    private javax.swing.JButton btn_hapuspesanan;
+    private javax.swing.JButton btn_tambah;
+    private javax.swing.JButton btn_tambah_menu;
+    private javax.swing.JSpinner input_jumlah;
+    private javax.swing.JComboBox<ItemCombo> input_tamu;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JSpinner jSpinner1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
-    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTable table_makanan;
+    private javax.swing.JTable table_pesanan;
+    private javax.swing.JTextField total_harga;
     // End of variables declaration//GEN-END:variables
 }

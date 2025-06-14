@@ -2,10 +2,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
 /**
@@ -17,70 +13,44 @@ public class Tamu extends javax.swing.JFrame {
     /**
      * Creates new form Tamu
      */
-    private Connection conn;
-    private Statement stmt;
+    private TamuClass tamuClass = new TamuClass();
     public Tamu() {
         initComponents();
-        initDatabase();
         tampilkanDataTamu();
     }
     
-    private void initDatabase() {
-        try {
-            conn = Database.getConnection();
-            stmt = conn.createStatement();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Gagal koneksi ke database: " + e.getMessage());
-        }
-    }
     
     private void tampilkanDataTamu() {
     DefaultTableModel model = new DefaultTableModel(new Object[]{"ID Tamu", "Nama"}, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
-            // Kolom No Kamar (index 1) saja yang bisa diubah
             return column == 1;
         }
     };
-    
-    try {
-        ResultSet rs = stmt.executeQuery("SELECT idTamu, nama FROM tamu");
 
-        while (rs.next()) {
-            model.addRow(new Object[]{
-                rs.getInt("idTamu"),
-                rs.getString("nama")
-            });
-        }
-
-        tabel_tamu.setModel(model);
-
-        // Tambahkan listener setelah set model
-        model.addTableModelListener(e -> {
-            int row = e.getFirstRow();
-            int column = e.getColumn();
-
-            if (column == 1) { // No Kamar diubah
-                int id = (int) model.getValueAt(row, 0);
-                String newNoTamu = model.getValueAt(row, 1).toString();
-
-                try {
-                    String sql = "UPDATE tamu SET nama = '" + newNoTamu + "' WHERE idTamu = " + id;
-                    int result = stmt.executeUpdate(sql);
-                    if (result > 0) {
-                        System.out.println("Data tamu berhasil diubah.");
-                    } else {
-                        System.out.println("Gagal mengubah data tamu.");
-                    }
-                } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(this, "Error update data: " + ex.getMessage());
-                }
-            }
-        });
-
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this, "Gagal mengambil data: " + e.getMessage());
+    // Ambil data dari class TamuClass
+    for (Object[] row : tamuClass.getDataTamu()) {
+        model.addRow(row);
     }
+
+    tabel_tamu.setModel(model);
+
+    model.addTableModelListener(e -> {
+        int row = e.getFirstRow();
+        int column = e.getColumn();
+
+        if (column == 1) {
+            int id = (int) model.getValueAt(row, 0);
+            String newNama = model.getValueAt(row, 1).toString();
+
+            boolean updated = tamuClass.updateNamaTamu(id, newNama);
+            if (updated) {
+                System.out.println("Data tamu berhasil diubah.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Gagal mengubah data tamu.");
+            }
+        }
+    });
 }
 
     /**
@@ -250,37 +220,29 @@ public class Tamu extends javax.swing.JFrame {
     private void hapus_kamar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hapus_kamar1ActionPerformed
         // TODO add your handling code here:
          // TODO add your handling code here:
-           int selectedRow = tabel_tamu.getSelectedRow();
+          int selectedRow = tabel_tamu.getSelectedRow();
 
-if (selectedRow == -1) {
-    JOptionPane.showMessageDialog(this, "Pilih baris yang ingin dihapus terlebih dahulu.");
-    return;
-}
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih baris yang ingin dihapus terlebih dahulu.");
+        return;
+    }
 
-int confirm = JOptionPane.showConfirmDialog(this, "Yakin ingin menghapus data ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
-if (confirm == JOptionPane.YES_OPTION) {
-    int id = (int) tabel_tamu.getValueAt(selectedRow, 0);
+    int confirm = JOptionPane.showConfirmDialog(this, "Yakin ingin menghapus data ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+    if (confirm == JOptionPane.YES_OPTION) {
+        int id = (int) tabel_tamu.getValueAt(selectedRow, 0);
 
-    try {
-        String sql = "DELETE FROM tamu WHERE idTamu = " + id;
-        int result = stmt.executeUpdate(sql);
-        if (result > 0) {
+        if (tamuClass.deleteTamu(id)) {
             ((DefaultTableModel) tabel_tamu.getModel()).removeRow(selectedRow);
             JOptionPane.showMessageDialog(this, "Data berhasil dihapus.");
         } else {
             JOptionPane.showMessageDialog(this, "Data gagal dihapus.");
         }
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this, "Error saat menghapus data: " + e.getMessage());
     }
-}
 
     }//GEN-LAST:event_hapus_kamar1ActionPerformed
 
-    private void submit_tamuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submit_tamuActionPerformed
-        // TODO add your handling code here:
-        // TODO add your handling code here:
-        // Ambil input nomor kamar dari textfield
+    private void submit_tamuActionPerformed(java.awt.event.ActionEvent evt) {                                            
+    
     String nama = input_tamu.getText().trim();
 
     // Validasi input
@@ -289,22 +251,14 @@ if (confirm == JOptionPane.YES_OPTION) {
         return;
     }
 
-    // Insert ke database
-    try {
-        String sql = "INSERT INTO tamu (nama) VALUES ('" + nama + "')";
-        int rowsAffected = stmt.executeUpdate(sql);
-
-        if (rowsAffected > 0) {
-            JOptionPane.showMessageDialog(this, "Data nama berhasil disimpan.");
-            input_tamu.setText(""); // Kosongkan field input
-            tampilkanDataTamu();    // Refresh tabel
-        } else {
-            JOptionPane.showMessageDialog(this, "Gagal menyimpan data tamu.");
-        }
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this, "Error saat menyimpan data: " + e.getMessage());
+    if (tamuClass.tambahTamu(nama)) {
+        JOptionPane.showMessageDialog(this, "Data nama berhasil disimpan.");
+        input_tamu.setText("");
+        tampilkanDataTamu();
+    } else {
+        JOptionPane.showMessageDialog(this, "Gagal menyimpan data tamu.");
     }
-    }//GEN-LAST:event_submit_tamuActionPerformed
+    }
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:

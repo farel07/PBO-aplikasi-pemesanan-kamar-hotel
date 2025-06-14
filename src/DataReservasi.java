@@ -2,13 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
-import java.sql.PreparedStatement;
 /**
  *
  * @author Farrel
@@ -18,101 +12,58 @@ public class DataReservasi extends javax.swing.JFrame {
     /**
      * Creates new form DataReservasi
      */
-    private Connection conn;
-    private Statement stmt;
+    private StaffClass staff = new StaffClass();
+
+
     public DataReservasi() {
         initComponents();
-        initDatabase();
         tampilkanDataReservasi();
     }
     
-    
-    private void initDatabase() {
-        try {
-            conn = Database.getConnection();
-            stmt = conn.createStatement();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Gagal koneksi ke database: " + e.getMessage());
-        }
-    }
-    
-    public void tampilkanDataReservasi() {
-    DefaultTableModel model = new DefaultTableModel();
-    model.addColumn("ID Reservasi");
-    model.addColumn("Nama Tamu");
-    model.addColumn("No. Kamar");
-    model.addColumn("Check-In");
-    model.addColumn("Check-Out");
-    model.addColumn("Status");
-
-    try {
-        String sql = "SELECT tr.idReservasi, t.nama AS nama_tamu, k.no_kamar, tr.tgl_checkin, tr.tgl_checkout, tr.status " +
-                     "FROM tamu_reservasi tr " +
-                     "JOIN tamu t ON tr.idTamu = t.idTamu " +
-                     "JOIN kamar k ON tr.idKamar = k.idKamar";
   
-        ResultSet rs = stmt.executeQuery(sql);
-
-        while (rs.next()) {
-            String statusStr = rs.getInt("status") == 0 ? "Aktif" : "Selesai";
-            model.addRow(new Object[]{
-                rs.getInt("idReservasi"),
-                rs.getString("nama_tamu"),
-                rs.getString("no_kamar"),
-                rs.getDate("tgl_checkin"),
-                rs.getDate("tgl_checkout"),
-                statusStr
-            });
-        }
-
-        tabel_reservasi.setModel(model);
-
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(null, "Gagal mengambil data reservasi: " + e.getMessage());
-    }
+    
+    private void tampilkanDataReservasi() {
+    tabel_reservasi.setModel(staff.getDataReservasi());
 }
     
     public void hapusReservasi(int idReservasi) {
-    try {
-        String sql = "DELETE FROM tamu_reservasi WHERE idReservasi = ?";
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setInt(1, idReservasi);
-        int rowsAffected = ps.executeUpdate();
+       int selectedRow = tabel_reservasi.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih reservasi yang ingin dihapus.");
+        return;
+    }
 
-        if (rowsAffected > 0) {
-            JOptionPane.showMessageDialog(null, "Reservasi berhasil dihapus.");
-            tampilkanDataReservasi();
+    int confirm = JOptionPane.showConfirmDialog(this, "Yakin ingin menghapus reservasi ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+    if (confirm == JOptionPane.YES_OPTION) {
+        int id_reservasi = (int) tabel_reservasi.getValueAt(selectedRow, 0);
+        
+        if (staff.hapusReservasi(id_reservasi)) {
+            JOptionPane.showMessageDialog(this, "Reservasi berhasil dihapus.");
+            tampilkanDataReservasi(); // panggil method di JFrame
         } else {
-            JOptionPane.showMessageDialog(null, "Reservasi tidak ditemukan.");
+            JOptionPane.showMessageDialog(this, "Gagal menghapus reservasi.");
         }
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(null, "Gagal menghapus reservasi: " + e.getMessage());
     }
 }
     
     
     public void selesaikanReservasi(int idReservasi) {
-    try {
-        // Update status reservasi menjadi 1
-        String sql1 = "UPDATE tamu_reservasi SET status = 1 WHERE idReservasi = ?";
-        PreparedStatement ps1 = conn.prepareStatement(sql1);
-        ps1.setInt(1, idReservasi);
-        ps1.executeUpdate();
+    int selectedRow = tabel_reservasi.getSelectedRow();
+if (selectedRow == -1) {
+    JOptionPane.showMessageDialog(this, "Pilih reservasi yang ingin diselesaikan.");
+    return;
+}
 
-        // Update status kamar menjadi 'kosong'
-        String sql2 = "UPDATE kamar SET status = 'kosong' WHERE idKamar = (" +
-                      "SELECT idKamar FROM tamu_reservasi WHERE idReservasi = ?)";
-        PreparedStatement ps2 = conn.prepareStatement(sql2);
-        ps2.setInt(1, idReservasi);
-        ps2.executeUpdate();
+int id_reservasi = (int) tabel_reservasi.getValueAt(selectedRow, 0);
+boolean success = staff.selesaikanReservasi(id_reservasi);
 
-        JOptionPane.showMessageDialog(null, "Reservasi diselesaikan.");
+if (success) {
+    JOptionPane.showMessageDialog(this, "Reservasi diselesaikan.");
+    tampilkanDataReservasi(); // Method milik JFrame
+} else {
+    JOptionPane.showMessageDialog(this, "Gagal menyelesaikan reservasi.");
+}
 
-        tampilkanDataReservasi();
-
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(null, "Gagal menyelesaikan reservasi: " + e.getMessage());
-    }
 }
 
 

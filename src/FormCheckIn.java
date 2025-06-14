@@ -5,13 +5,10 @@
 
 
 import java.sql.Statement;
-import java.sql.ResultSet;
-import javax.swing.table.DefaultTableModel;
+import java.util.List;
+
 import javax.swing.JOptionPane;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Date;
+
 
 /**
  *
@@ -22,54 +19,46 @@ public class FormCheckIn extends javax.swing.JFrame {
     /**
      * Creates new form FormCheckIn
      */
-    private Connection conn;
+    private TamuClass tamuClass = new TamuClass();
+    private StaffClass staffClass = new StaffClass();
+ 
     private Statement stmt;
     public FormCheckIn() {
         initComponents();
-        initDatabase();
         isiComboBoxTamu();
         isiComboBoxKamar();
     }
 
     
-    private void initDatabase() {
-        try {
-            conn = Database.getConnection();
-            stmt = conn.createStatement();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Gagal koneksi ke database: " + e.getMessage());
-        }
-    }
     
     private void isiComboBoxTamu() {
     try {
         input_tamu.removeAllItems();
-        String sql = "SELECT idTamu, nama FROM tamu";
-        ResultSet rs = stmt.executeQuery(sql);
-        while (rs.next()) {
-            int id = rs.getInt("idTamu");
-            String nama = rs.getString("nama");
-            input_tamu.addItem(new ItemCombo(id, nama));
+        List<ItemCombo> daftarTamu = tamuClass.getAllTamu();
+        for (ItemCombo item : daftarTamu) {
+            input_tamu.addItem(item);
         }
-    } catch (SQLException e) {
+    } catch (Exception e) {
         JOptionPane.showMessageDialog(this, "Gagal memuat data tamu: " + e.getMessage());
     }
 }
 
+
+
+
 private void isiComboBoxKamar() {
     try {
         input_kamar.removeAllItems();
-        String sql = "SELECT idKamar, no_kamar FROM kamar WHERE status = 'kosong'";
-        ResultSet rs = stmt.executeQuery(sql);
-        while (rs.next()) {
-            int id = rs.getInt("idKamar");
-            String noKamar = rs.getString("no_kamar");
-            input_kamar.addItem(new ItemCombo(id, noKamar));
+        List<ItemCombo> kamarKosong = staffClass.getKamarKosong();
+        for (ItemCombo item : kamarKosong) {
+            input_kamar.addItem(item);
         }
-    } catch (SQLException e) {
+    } catch (Exception e) {
         JOptionPane.showMessageDialog(this, "Gagal memuat data kamar: " + e.getMessage());
     }
 }
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -254,44 +243,30 @@ private void isiComboBoxKamar() {
         // TODO add your handling code here:
     }//GEN-LAST:event_input_kamarActionPerformed
 
-    private void button_tambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_tambahActionPerformed
-        // TODO add your handling code here:
-        // Ambil nilai input dari form
-    ItemCombo selectedTamu = (ItemCombo) input_tamu.getSelectedItem();
+    private void button_tambahActionPerformed(java.awt.event.ActionEvent evt) {                                              
+        ItemCombo selectedTamu = (ItemCombo) input_tamu.getSelectedItem();
     ItemCombo selectedKamar = (ItemCombo) input_kamar.getSelectedItem();
     java.util.Date checkinDate = input_checkin.getDate();
     java.util.Date checkoutDate = input_checkout.getDate();
 
-    // Validasi
-    if (checkinDate == null || checkoutDate == null || selectedTamu == null || selectedKamar == null) {
-        JOptionPane.showMessageDialog(this, "Semua field harus diisi!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+    if (selectedTamu == null || selectedKamar == null || checkinDate == null || checkoutDate == null) {
+        JOptionPane.showMessageDialog(this, "Semua field harus diisi!");
         return;
     }
 
-    // Konversi tanggal
     java.sql.Date sqlCheckin = new java.sql.Date(checkinDate.getTime());
     java.sql.Date sqlCheckout = new java.sql.Date(checkoutDate.getTime());
 
-    try {
-        String sql = "INSERT INTO tamu_reservasi (idTamu, tgl_checkin, tgl_checkout, status, idKamar) VALUES (?, ?, ?, 0, ?)";
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        stmt.setInt(1, selectedTamu.getId());
-        stmt.setDate(2, sqlCheckin);
-        stmt.setDate(3, sqlCheckout);
-        stmt.setInt(4, selectedKamar.getId());
+    // Panggil fungsi dari StaffClass
+    boolean berhasil = staffClass.tambahReservasi(selectedTamu.getId(), selectedKamar.getId(), sqlCheckin, sqlCheckout);
 
-        int rowsInserted = stmt.executeUpdate();
-        if (rowsInserted > 0) {
-            JOptionPane.showMessageDialog(this, "Data reservasi berhasil ditambahkan.");
-        } else {
-            JOptionPane.showMessageDialog(this, "Gagal menambahkan data reservasi.");
-        }
-
-    } catch (Exception ex) {
-        ex.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat menyimpan data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    if (berhasil) {
+        JOptionPane.showMessageDialog(this, "Reservasi berhasil ditambahkan.");
+        staffClass.getDataReservasi(); // Refresh tabel
+    } else {
+        JOptionPane.showMessageDialog(this, "Gagal menambahkan reservasi.");
     }
-    }//GEN-LAST:event_button_tambahActionPerformed
+    }
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
@@ -318,6 +293,7 @@ private void isiComboBoxKamar() {
                     break;
                 }
             }
+            
         } catch (ClassNotFoundException ex) {
             java.util.logging.Logger.getLogger(FormCheckIn.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
