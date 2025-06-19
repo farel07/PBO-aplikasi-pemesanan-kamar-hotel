@@ -148,6 +148,8 @@ private void hitungTotalHarga() {
         btn_hapuspesanan = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setBackground(new java.awt.Color(153, 255, 153));
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         table_makanan.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -160,9 +162,12 @@ private void hitungTotalHarga() {
                 "Nama", "Harga"
             }
         ));
+        table_makanan.setSelectionBackground(new java.awt.Color(204, 204, 204));
         jScrollPane1.setViewportView(table_makanan);
 
-        jPanel1.setBackground(new java.awt.Color(204, 255, 255));
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 160, 366, 373));
+
+        jPanel1.setBackground(new java.awt.Color(0, 255, 204));
         jPanel1.setPreferredSize(new java.awt.Dimension(627, 86));
 
         jLabel1.setFont(new java.awt.Font("Verdana", 1, 24)); // NOI18N
@@ -190,9 +195,14 @@ private void hitungTotalHarga() {
                 .addContainerGap(30, Short.MAX_VALUE))
         );
 
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 6, 623, -1));
+        getContentPane().add(input_jumlah, new org.netbeans.lib.awtextra.AbsoluteConstraints(454, 132, 170, -1));
+
         jLabel3.setText("Jumlah :");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(454, 110, 51, -1));
 
         jLabel4.setText("Semua Pesanan :");
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(384, 191, 99, -1));
 
         table_pesanan.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -207,127 +217,73 @@ private void hitungTotalHarga() {
         ));
         jScrollPane2.setViewportView(table_pesanan);
 
-        jLabel5.setText("Total Harga :");
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(384, 213, 236, 201));
 
+        jLabel5.setText("Total Harga :");
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(384, 423, 81, -1));
+
+        btn_bayar.setBackground(new java.awt.Color(51, 102, 255));
         btn_bayar.setText("Bayar");
         btn_bayar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_bayarActionPerformed(evt);
             }
         });
+        getContentPane().add(btn_bayar, new org.netbeans.lib.awtextra.AbsoluteConstraints(384, 495, 236, -1));
 
         jLabel6.setText("Tamu:");
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 113, -1, -1));
 
+        input_tamu.setBackground(new java.awt.Color(204, 204, 204));
         input_tamu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 input_tamuActionPerformed(evt);
             }
         });
+        getContentPane().add(input_tamu, new org.netbeans.lib.awtextra.AbsoluteConstraints(73, 110, 149, -1));
 
+        btn_tambah_menu.setBackground(new java.awt.Color(153, 255, 153));
         btn_tambah_menu.setText("Tambah Menu");
         btn_tambah_menu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_tambah_menuActionPerformed(evt);
             }
         });
+        getContentPane().add(btn_tambah_menu, new org.netbeans.lib.awtextra.AbsoluteConstraints(228, 110, -1, -1));
 
+        btn_hapus_menu.setBackground(new java.awt.Color(255, 51, 51));
         btn_hapus_menu.setText("Hapus");
         btn_hapus_menu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_hapus_menuActionPerformed(evt);
             }
         });
+        getContentPane().add(btn_hapus_menu, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 110, -1, -1));
 
+        btn_tambah.setBackground(new java.awt.Color(153, 255, 153));
         btn_tambah.setText("Tambah");
         btn_tambah.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_tambahActionPerformed(evt);
             }
         });
+        getContentPane().add(btn_tambah, new org.netbeans.lib.awtextra.AbsoluteConstraints(547, 160, -1, -1));
 
+        total_harga.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                total_hargaActionPerformed(evt);
+            }
+        });
+        getContentPane().add(total_harga, new org.netbeans.lib.awtextra.AbsoluteConstraints(384, 455, 236, 28));
+
+        btn_hapuspesanan.setBackground(new java.awt.Color(255, 51, 51));
         btn_hapuspesanan.setText("Hapus");
         btn_hapuspesanan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_hapuspesananActionPerformed(evt);
             }
         });
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 623, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(17, 17, 17)
-                        .addComponent(jLabel6)
-                        .addGap(18, 18, 18)
-                        .addComponent(input_tamu, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btn_tambah_menu)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btn_hapus_menu)
-                        .addGap(42, 42, 42)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(input_jumlah, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 5, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 366, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(btn_tambah)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(btn_hapuspesanan)
-                                        .addGap(10, 10, 10))
-                                    .addComponent(btn_bayar, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
-                                    .addComponent(total_harga))))
-                        .addGap(9, 9, 9)))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(input_jumlah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(input_tamu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel6)
-                        .addComponent(btn_tambah_menu)
-                        .addComponent(btn_hapus_menu)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btn_tambah)
-                        .addGap(8, 8, 8)
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel5)
-                            .addComponent(btn_hapuspesanan))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(total_harga, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btn_bayar)
-                        .addContainerGap(15, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
-        );
+        getContentPane().add(btn_hapuspesanan, new org.netbeans.lib.awtextra.AbsoluteConstraints(538, 420, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -398,44 +354,33 @@ private void hitungTotalHarga() {
 
     private void btn_tambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_tambahActionPerformed
 
-    int selectedRow = table_makanan.getSelectedRow();
+   int selectedRow = table_makanan.getSelectedRow();
     if (selectedRow == -1) {
         JOptionPane.showMessageDialog(this, "Pilih makanan terlebih dahulu!");
         return;
     }
 
-    int id = (int) table_makanan.getValueAt(selectedRow, 0); // ID Menu
+    int idMenu = (int) table_makanan.getValueAt(selectedRow, 0);  // Ambil ID Menu dari kolom 0
     String nama = table_makanan.getValueAt(selectedRow, 1).toString();
     int harga = (int) table_makanan.getValueAt(selectedRow, 2);
-    int qtyInput = (int) input_jumlah.getValue();
+    int qty = (int) input_jumlah.getValue();
 
-    if (qtyInput <= 0) {
+    if (qty <= 0) {
         JOptionPane.showMessageDialog(this, "Jumlah harus lebih dari 0!");
         return;
     }
 
+    // Tambah ke tabel pesanan (UI)
     DefaultTableModel model = (DefaultTableModel) table_pesanan.getModel();
+    model.addRow(new Object[]{idMenu, nama, harga, qty});
 
-    // Cek apakah ID sudah ada
-    boolean ditemukan = false;
-    for (int i = 0; i < model.getRowCount(); i++) {
-        int idExisting = (int) model.getValueAt(i, 0);
-        if (idExisting == id) {
-            int qtyLama = (int) model.getValueAt(i, 3);
-            model.setValueAt(qtyLama + qtyInput, i, 3); // update qty
-            ditemukan = true;
-            break;
-        }
-    }
-
-    if (!ditemukan) {
-        model.addRow(new Object[]{id, nama, harga, qtyInput});
-    }
+    // Tambah ke arraylist pesanan untuk disimpan ke database
+    pesanan.add(new Object[]{idMenu, nama, harga, qty});
 
     hitungTotalHarga();
 }//GEN-LAST:event_btn_tambahActionPerformed
 
-    private void btn_hapuspesananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_hapuspesananActionPerformed
+    private void btn_hapuspesananActionPerformed(java.awt.event.ActionEvent evt) {                                                 
         // TODO add your handling code here:
         int selectedRow = table_pesanan.getSelectedRow();
 
